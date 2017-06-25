@@ -20,6 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Net;
+using System.Windows.Forms;
 
 namespace LemonCraft
 {
@@ -32,6 +33,8 @@ namespace LemonCraft
         {
             InitializeComponent();
             UserName.Text = Settings.Default.UserName;
+            Reporter.SetClientName("Lc-1.7.2");
+            Asd.Text = "Minecraft  " + LauncherCore.Create().GetVersions().ToArray()[0].Assets;
         }
         /// <summary>   
         /// 解压功能   
@@ -112,16 +115,17 @@ namespace LemonCraft
             }
             return result;
         }
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        private async void Border_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (tit.Text == "")
             {
-                LauncherCore Core = LauncherCore.Create();
-                Reporter.SetClientName("Lc-1.7.2");
-                var versions = Core.GetVersions().ToArray();
-                Core.JavaPath = AppDomain.CurrentDomain.BaseDirectory + @"jre8\bin\javaw.exe";
-                var ver = versions[0];
-                var result = Core.Launch(new LaunchOptions
+                LauncherCore dt;
+                if (paths != "sss")
+                    dt = LauncherCore.Create(paths);
+                else dt = LauncherCore.Create();
+                dt.JavaPath = AppDomain.CurrentDomain.BaseDirectory + @"jre8\bin\javaw.exe"; ;
+                var ver=dt.GetVersions().ToArray()[0];
+                var result = dt.Launch(new LaunchOptions
                 {
                     Version = ver,
                     MaxMemory = 514,
@@ -133,7 +137,7 @@ namespace LemonCraft
                 d.Completed += delegate { Environment.Exit(0); };
                 this.BeginAnimation(OpacityProperty, d);
             }
-            else { tit.Text = "游戏数据尚未加载或加载失败，无法启动游戏"; }
+            else { tit.Text = "游戏数据尚未加载或加载失败，无法启动游戏"; await Task.Delay(2000); tit.Text = ""; }
         }
 
         private void Border_MouseDown_1(object sender, MouseButtonEventArgs e)
@@ -192,6 +196,22 @@ namespace LemonCraft
                        };
                    };
                 }
+            }
+        }
+        string paths = "sss";
+        private async void Asd_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            FolderBrowserDialog m_Dialog = new FolderBrowserDialog();
+            DialogResult result = m_Dialog.ShowDialog();
+
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    paths = m_Dialog.SelectedPath;
+                    Asd.Text = "Minecraft  " + LauncherCore.Create(m_Dialog.SelectedPath).GetVersions().ToArray()[0].Assets;
+                }
+                catch { tit.Text = "无效的目录"; await Task.Delay(2000); tit.Text="";}
             }
         }
     }
