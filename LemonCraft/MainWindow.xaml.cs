@@ -196,6 +196,13 @@ namespace LemonCraft
                            tit.Text = "正在应用数据更改... (2/2)";
                            await Task.Run(new Action(delegate { UnZip(AppDomain.CurrentDomain.BaseDirectory + ".minecraft.zip", AppDomain.CurrentDomain.BaseDirectory, ""); }));
                            s.Dispose();
+                           tit.Text = "";
+                           try
+                           {
+                               if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + ".minecraft") && Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + ".jre"))
+                                   Asd.Text = "Minecraft  " + LauncherCore.Create().GetVersions().ToArray()[0].Assets;
+                           }
+                           catch { Asd.Text = "没有检测到MC，点我添加"; }
                        };
                    };
                 }
