@@ -151,26 +151,46 @@ namespace LemonCraft
         {
             if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + ".minecraft"))
             {
-                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Data.zip"))
+                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "jre.zip")&& File.Exists(AppDomain.CurrentDomain.BaseDirectory + ".minecraft.zip"))
                 {
-                    tit.Text = "游戏数据加载中...";
-                    await Task.Run(new Action(delegate { UnZip(AppDomain.CurrentDomain.BaseDirectory + "Data.zip", AppDomain.CurrentDomain.BaseDirectory, ""); }));
+                    tit.Text = "游戏数据加载中...(1/2)";
+                    await Task.Run(new Action(delegate { UnZip(AppDomain.CurrentDomain.BaseDirectory + "jre.zip", AppDomain.CurrentDomain.BaseDirectory, ""); }));
+                    tit.Text = "游戏数据加载中...(2/2)";
+                    await Task.Run(new Action(delegate { UnZip(AppDomain.CurrentDomain.BaseDirectory + ".minecraft.zip", AppDomain.CurrentDomain.BaseDirectory, ""); }));
                     tit.Text = "";
+                }else if(File.Exists(AppDomain.CurrentDomain.BaseDirectory + "jre.zip")&& !File.Exists(AppDomain.CurrentDomain.BaseDirectory + ".minecraft.zip"))
+                {
+                    tit.Text = "正在应用数据更改... (1/2)";
+                    await Task.Run(new Action(delegate { UnZip(AppDomain.CurrentDomain.BaseDirectory + "jre.zip", AppDomain.CurrentDomain.BaseDirectory, ""); }));
+                    var s = new WebClient();
+                    s.DownloadFileAsync(new Uri("http://pan.kzwr.com/kzwrfs?fid=dde342eefa164bec8a45408ce25ccfd1bzo1.zip"), AppDomain.CurrentDomain.BaseDirectory + ".minecraft.zip");
+                    s.DownloadProgressChanged += delegate (object se, DownloadProgressChangedEventArgs es) { tit.Text = "下载游戏数据中...    " + (es.ProgressPercentage) + "%   (2/2)"; };
+                    s.DownloadFileCompleted += async delegate
+                    {
+                        tit.Text = "正在应用数据更改... (2/2)";
+                        await Task.Run(new Action(delegate { UnZip(AppDomain.CurrentDomain.BaseDirectory + ".minecraft.zip", AppDomain.CurrentDomain.BaseDirectory, ""); }));
+                        s.Dispose();
+                    };
                 }
                 else { tit.Text = "下载游戏数据中...";
                     System.Net.WebClient w = new System.Net.WebClient();
-                    w.DownloadFileAsync(new Uri("http://api.lemonapp.tk/Mc/Data.zip"), AppDomain.CurrentDomain.BaseDirectory + "Data.zip");
-                    w.DownloadProgressChanged += delegate (object se, DownloadProgressChangedEventArgs es) { tit.Text = "下载游戏数据中...    " + (es.ProgressPercentage) + "%"; };
+                    w.DownloadFileAsync(new Uri("http://pan.kzwr.com/kzwrfs?fid=c63a5591bce6404198b66e84ca36ecb0317r.zip"), AppDomain.CurrentDomain.BaseDirectory + "jre.zip");
+                    w.DownloadProgressChanged += delegate (object se, DownloadProgressChangedEventArgs es) { tit.Text = "下载游戏数据中...    " + (es.ProgressPercentage) + "%   (1/2)"; };
                     w.DownloadFileCompleted += async delegate
-                    {
-                        if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "Data.zip"))
-                        {
-                            tit.Text = "游戏数据加载中...";
-                            await Task.Run(new Action(delegate { UnZip(AppDomain.CurrentDomain.BaseDirectory + "Data.zip", AppDomain.CurrentDomain.BaseDirectory, ""); }));
-                            tit.Text = "";
-                        }
-                        else { tit.Text = "游戏数据下载失败"; }
-                    };
+                   {
+                       tit.Text = "正在应用数据更改... (1/2)";
+                       await Task.Run(new Action(delegate { UnZip(AppDomain.CurrentDomain.BaseDirectory + "jre.zip", AppDomain.CurrentDomain.BaseDirectory, ""); }));
+                       w.Dispose();
+                       var s = new WebClient();
+                       s.DownloadFileAsync(new Uri("http://pan.kzwr.com/kzwrfs?fid=dde342eefa164bec8a45408ce25ccfd1bzo1.zip"), AppDomain.CurrentDomain.BaseDirectory + ".minecraft.zip");
+                       s.DownloadProgressChanged += delegate (object se, DownloadProgressChangedEventArgs es) { tit.Text = "下载游戏数据中...    " + (es.ProgressPercentage) + "%   (2/2)"; };
+                       s.DownloadFileCompleted += async delegate
+                       {
+                           tit.Text = "正在应用数据更改... (2/2)";
+                           await Task.Run(new Action(delegate { UnZip(AppDomain.CurrentDomain.BaseDirectory + ".minecraft.zip", AppDomain.CurrentDomain.BaseDirectory, ""); }));
+                           s.Dispose();
+                       };
+                   };
                 }
             }
         }
