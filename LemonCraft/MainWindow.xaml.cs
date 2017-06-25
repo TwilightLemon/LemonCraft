@@ -34,8 +34,11 @@ namespace LemonCraft
             InitializeComponent();
             UserName.Text = Settings.Default.UserName;
             Reporter.SetClientName("Lc-1.7.2");
-            Asd.Text = "Minecraft  " + LauncherCore.Create().GetVersions().ToArray()[0].Assets;
-        }
+            try {
+                if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + ".minecraft") && Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + ".jre"))
+                    Asd.Text = "Minecraft  " + LauncherCore.Create().GetVersions().ToArray()[0].Assets;
+            }catch { Asd.Text = "没有检测到MC，点我添加"; }
+       }
         /// <summary>   
         /// 解压功能   
         /// </summary>   
@@ -153,7 +156,7 @@ namespace LemonCraft
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + ".minecraft"))
+            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + ".minecraft")&& !Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + ".jre"))
             {
                 if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "jre.zip")&& File.Exists(AppDomain.CurrentDomain.BaseDirectory + ".minecraft.zip"))
                 {
